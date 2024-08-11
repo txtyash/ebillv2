@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Users</title>
+  <!-- Import js and css for bootstrap 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- add cdn link for rufina google font -->
+  <link href="https://fonts.googleapis.com/css2?family=Rufina:wght@700&display=swap" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet" />
+  <link href="../styles.css" rel="stylesheet" />
+  <style>
+    .card {
+      color: #333;
+    }
+
+    .card li {
+      background-color: #f7f7f7;
+    }
+  </style>
+  <script>
+    // check the role field on the appState from local storage and if the user is not admin then redirect to login page
+    if (
+      !localStorage.getItem("appState") ||
+      JSON.parse(localStorage.getItem("appState")).role !== "admin"
+    ) {
+      window.location.href = "/login.html";
+    }
+  </script>
+</head>
+
+<body>
+  <nav class="px-3 navbar navbar-expand navbar-dark bg-dark sticky-top justify-content-between">
+    <!-- Title and tagline -->
+    <div class="d-flex align-items-center">
+      <a class="navbar-brand fancy-text" href="/">
+        Mahavitaran<i class="ml-2 fa-brands fa-slack"></i>
+      </a>
+      <!-- apply bootstrap class to display this after small breakpoint -->
+      <p class="d-none d-md-block text-nowrap my-auto" style="color: gainsboro">
+        Effortless Electricity Billing
+      </p>
+    </div>
+
+    <!-- Links -->
+    <ul class="navbar-nav ml-auto">
+      <li class="nav-item">
+        <a class="nav-link" href="../protected/manage.html">
+          Manage
+          <span class="sr-only">(current)</span>
+        </a>
+      </li>
+      <!-- Different view if logged in or logged out -->
+      <li class="nav-item">
+        <a class="nav-link" href="../register.html">
+          Register
+          <span class="sr-only">(current)</span>
+        </a>
+      </li>
+      <li class="">
+        <a class="nav-link" href="../protected/notifications.html">
+          <i class="bi bi-bell"></i>
+          <span class="sr-only">(current)</span>
+        </a>
+      </li>
+    </ul>
+  </nav>
+
+  <div class="container col-lg-6">
+    <h2 class="my-3 text-center">Connection Requests</h2>
+    <!-- TODO: Implement user.html page -->
+    <div class="applications">
+    </div>
+  </div>
+  <script type="module">
+    import { approveConnection } from "/src/connections";
+    // get applications from the applications array from local storage
+    let applications = JSON.parse(localStorage.getItem("applications"));
+    // if applications is not null then loop through the applications array and create a card for each application
+    if (applications) {
+      console.log(applications);
+      applications = applications.filter((application) => application.status === "pending");
+      applications.forEach((application) => {
+        const name = application?.owner?.name;
+        let address = application?.address;
+        address = `${address?.street}, ${address?.district}, ${address?.pincode}`;
+        const card = document.createElement("div");
+        card.classList.add("card", "d-flex", "my-3", "mx-auto", "col-lg-7");
+        card.innerHTML = `
+          <div class="card-body">
+            <input type="hidden" name="applicationID" value="${application.id}">
+            <ul class="list-group list-group-flush">
+              <li class="list-group-item"><b>Full Name: </b>${name}</li>
+              <li class="list-group-item">
+                <small><b>Address: </b>"${address}"</small>
+              </li>
+            </ul>
+            <div class="d-flex justify-content-between reject">
+              <button class="dark-btn">
+                <span><i class="fa-solid fa-circle"></i></span>Reject
+              </button>
+              <button class="dark-btn approve">
+                <span><i class="fa-solid fa-circle"></i></span>Approve
+              </button>
+            </div>
+          </div>
+        `;
+        document.querySelector(".applications").appendChild(card);
+      });
+    }
+    /*
+  export interface Application {
+  id: string;
+  name: string;
+  owner: User;
+  address: Address,
+  dateSubmitted: Date;
+  dateApproved: Date | null;
+  // depends on the dateApproved field
+  status: "approved" | "rejected" | "pending";
+  // if status is approved, this field will be populated
+  connection: Connection | null;
+}
+  on clicking reject, get the application for that id and set the status to rejected and update the applications array in local storage. get that application's owner from the application object itself then update that user object and update that user in the users array in the localstorage. the key of users list is "users"
+  */
+    document.querySelectorAll(".reject").forEach((rejectButton) => {
+      rejectButton.addEventListener("click", (e) => {
+        const applicationID = e.target.parentElement.parentElement.querySelector("input[name='applicationID']").value;
+        const applications = JSON.parse(localStorage.getItem("applications"));
+        const application = applications.find((app) => app.id === applicationID);
+        application.status = "rejected";
+        // now get the owner from the application object's owner field. Then update the user object in the users array in the localstorage
+        const users = JSON.parse(localStorage.getItem("users"));
+        const user = users.find((user) => user.id === application.owner.id);
+        // just set the status to rejected for that particular application of the owner
+        user.applications.find((app) => app.id === applicationID).status = "rejected";
+        localStorage.setItem("users", JSON.stringify(users));
+        localStorage.setItem("applications", JSON.stringify(applications));
+        e.target.parentElement.parentElement.parentElement.remove();
+      });
+    });
+    //   on clicking approve, get the application for that id and set the status and update the applications array in local storage. get that application's owner from the application object itself then update that user object and update that user in the users array in the localstorage. the key of users list is "users"
+    document.querySelectorAll(".approve").forEach((approveButton) => {
+      approveButton.addEventListener("click", (e) => {
+        const applicationID = e.target.parentElement.parentElement.querySelector("input[name='applicationID']").value;
+        const applications = JSON.parse(localStorage.getItem("applications"));
+        const application = applications.find((app) => app.id === applicationID);
+        application.status = "approved";
+        // now get the owner from the application object's owner field. Then update the user object in the users array in the localstorage
+        const users = JSON.parse(localStorage.getItem("users"));
+        const user = users.find((user) => user.id === application.owner.id);
+        // just set the status to approved for that particular application of the owner
+        user.applications.find((app) => app.id === applicationID).status = "approved";
+        localStorage.setItem("users", JSON.stringify(users));
+        localStorage.setItem("applications", JSON.stringify(applications));
+        e.target.parentElement.parentElement.parentElement.remove();
+        approveConnection(application);
+      });
+    });
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Personal Information</title>
+  <!-- Import js and css for bootstrap 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- add cdn link for rufina google font -->
+  <link href="https://fonts.googleapis.com/css2?family=Rufina:wght@700&display=swap" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet" />
+  <link href="../styles.css" rel="stylesheet" />
+  <script type="module">
+    import { Validation } from "../src/helpers/validators";
+    // check the loggedIn field on the appState from local storage and if the user is not logged in then redirect to login page
+    if (
+      !localStorage.getItem("appState") ||
+      !JSON.parse(localStorage.getItem("appState")).loggedIn
+    ) {
+      window.location.href = "/login.html";
+    }
+
+    if (!Validation.userInfoComplete()) {
+      window.location.href = "personal-info.html";
+    }
+  </script>
+  <style>
+    .bi-patch-check-fill,
+    .bi-patch-exclamation-fill {
+      font-size: 1.25rem;
+    }
+
+    .card {
+      color: #333;
+    }
+
+    .card li {
+      background-color: #f7f7f7;
+    }
+
+    .bi-x {
+      font-size: 1.25rem;
+    }
+  </style>
+</head>
+
+<body>
+  <nav class="px-3 navbar navbar-expand navbar-dark bg-dark sticky-top justify-content-between">
+    <!-- Title and tagline -->
+    <div class="d-flex align-items-center">
+      <a class="navbar-brand fancy-text" href="/">
+        Mahavitaran<i class="ml-2 fa-brands fa-slack"></i>
+      </a>
+      <!-- apply bootstrap class to display this after small breakpoint -->
+      <p class="d-none d-md-block text-nowrap my-auto" style="color: gainsboro">
+        Effortless Electricity Billing
+      </p>
+    </div>
+
+    <!-- Links -->
+    <ul class="navbar-nav ml-auto">
+      <li class="nav-item">
+        <a class="nav-link" href="manage.html">
+          Manage
+          <span class="sr-only">(current)</span>
+        </a>
+      </li>
+      <!-- Different view if logged in or logged out -->
+      <li class="nav-item">
+        <a class="nav-link" href="../register.html">
+          Register
+          <span class="sr-only">(current)</span>
+        </a>
+      </li>
+      <li class="">
+        <a class="nav-link" href="notifications.html">
+          <i class="bi bi-bell"></i>
+          <span class="sr-only">(current)</span>
+        </a>
+      </li>
+    </ul>
+  </nav>
+
+  <div class="container">
+    <h2 class="my-3 text-center">Your Power Connections</h2>
+    <div class="connections">
+      <!-- Connection cards will be added here -->
+    </div>
+    <!-- New connection button -->
+    <div class="text-center mt-4">
+      <button type="button" class="dark-btn" data-bs-toggle="modal" data-bs-target="#newConnectionModal">
+        <span><i class="fas fa-plus"></i></span>New Connection
+      </button>
+    </div>
+
+    <!-- Modal for new connection form -->
+    <div class="modal fade" id="newConnectionModal" tabindex="-1" aria-labelledby="newConnectionModalLabel">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="newConnectionModalLabel">
+              Request New Connection
+            </h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form class="w-100 col-lg-6" id="newConnectionForm">
+              <div class="form-group">
+                <label for="name" class="form-label">Connection Name</label>
+                <input type="text" class="form-control" id="name" name="name" minlength="1" maxlength="50"
+                  pattern=".*\S.*"
+                  title="Connection name should be a minimum of 1 character and a maximum of 100 characters"
+                  placeholder="Home" required />
+              </div>
+              <div class="form-group">
+                <label for="street" class="form-label">Street address</label>
+                <input type="text" name="street" class="form-control" id="street"
+                  placeholder="Lane 2, Devnagari Colony Rd., Ananta Meadows. 401" required />
+              </div>
+              <div class="row">
+                <div class="form-group col">
+                  <label for="state">Choose your district</label>
+                  <select class="form-select" id="state" required>
+                    <option selected disabled>District</option>
+                    <option value="Mumbai">Mumbai</option>
+                    <option value="Pune">Pune</option>
+                    <option value="Nagpur">Nagpur</option>
+                    <option value="Nashik">Nashik</option>
+                    <option value="Aurangabad">Aurangabad</option>
+                    <option value="Solapur">Solapur</option>
+                    <option value="Amravati">Amravati</option>
+                    <option value="Kolhapur">Kolhapur</option>
+                    <option value="Thane">Thane</option>
+                    <option value="Raigad">Raigad</option>
+                    <option value="Sangli">Sangli</option>
+                    <option value="Satara">Satara</option>
+                    <option value="Jalgaon">Jalgaon</option>
+                    <option value="Dhule">Dhule</option>
+                    <option value="Nandurbar">Nandurbar</option>
+                    <option value="Ahmednagar">Ahmednagar</option>
+                    <option value="Jalna">Jalna</option>
+                    <option value="Parbhani">Parbhani</option>
+                    <option value="Beed">Beed</option>
+                    <option value="Latur">Latur</option>
+                    <option value="Osmanabad">Osmanabad</option>
+                    <option value="Nanded">Nanded</option>
+                  </select>
+                </div>
+                <div class="form-group col">
+                  <label for="zip" class="form-label">
+                    ZIP or postal code
+                  </label>
+                  <input type="text" name="zip" class="form-control" id="zip" pattern="^\d{6}$"
+                    title="6 digit postal code" placeholder="411036" required />
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="ownership" class="form-label">
+                  Proof of ownership (pdf)
+                  <small>
+                    <a href="https://wss.mahadiscom.in/wss/images/DocumentsRequiredForNewConnectionChangeLoadDemand.pdf"
+                      rel="noopener" target="_blank">
+                      What is it?
+                    </a></small>
+                </label>
+                <input type="file" name="ownership" class="form-control" id="ownership" accept="application/pdf"
+                  required />
+              </div>
+              <div class="form-group">
+                <label for="identity" class="form-label">
+                  Identity proof
+                  <p>
+                    <small>PAN card/Aadhar/Voter ID/Driving License (any one)
+                      (pdf/image)</small>
+                  </p>
+                </label>
+                <input type="file" name="identity" class="form-control" id="identity" accept=".pdf, image/*" required />
+              </div>
+              <button type="submit" class="dark-btn" id="saveButton">
+                <span><i class="fa-solid fa-circle"></i></span>Request
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script type="module">
+    import { addApplication } from "/src/connections";
+    import Swal from "sweetalert2";
+    document
+      .querySelector("#newConnectionForm")
+      .addEventListener("submit", (e) => {
+        e.preventDefault();
+        const owner = JSON.parse(localStorage.getItem("appState")).user;
+        const dateSubmitted = new Date();
+        const status = "pending";
+        const address = {
+          street: e.target.street.value,
+          district: e.target.state.value,
+          pincode: e.target.zip.value,
+        };
+        const name = e.target.name.value;
+        const connection = null;
+        const id = Date.now().toString();
+        const application = {
+          id,
+          name,
+          owner,
+          address,
+          dateSubmitted,
+          status,
+          connection,
+        };
+        addApplication(application);
+        // sway.fire and dismiss the modal
+        Swal.fire({
+          title: "Connection requested",
+          icon: "success",
+          timer: 2000,
+          showConfirmButton: false,
+        });
+        e.target.reset();
+        document.querySelector("#newConnectionModal .btn-close").click();
+      });
+    // get current user from appstate. get their connections and add it the the .connections div
+    const appState = JSON.parse(localStorage.getItem("appState"));
+    const connections = appState.user.connections;
+    const connectionsDiv = document.querySelector(".connections");
+    connections.forEach((connection) => {
+      let address = connection.owner.address;
+      address = `${address.street}, ${address.district}, ${address.pincode}`;
+      const card = document.createElement("div");
+      card.classList.add("card");
+      card.classList.add("my-3");
+      card.innerHTML = `
+        <div class="card-body">
+          <h5 class="card-title">${connection.application.name}</h5>
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item"><b>Address: </b>${address}</li>
+            <li class="list-group-item"><b>CA Number: </b>${connection.id}</li>
+            <li class="list-group-item"><b>Status: </b><span class="text-${connection.status === "active" ? "success" : "danger"
+        }">${connection.status}</span></li>
+          </ul>
+        </div>
+      `;
+      connectionsDiv.appendChild(card);
+
+    });
+
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Generate bill</title>
+  <!-- Import js and css for bootstrap 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- add cdn link for rufina google font -->
+  <link href="https://fonts.googleapis.com/css2?family=Rufina:wght@700&display=swap" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet" />
+  <link href="../styles.css" rel="stylesheet" />
+  <script>
+    // check the role field on the appState from local storage and if the user is not admin then redirect to login page
+    if (
+      !localStorage.getItem("appState") ||
+      JSON.parse(localStorage.getItem("appState")).role !== "admin"
+    ) {
+      window.location.href = "/login.html";
+    }
+  </script>
+  <style>
+    .card {
+      color: #333;
+    }
+
+    .card li {
+      background-color: #f7f7f7;
+    }
+  </style>
+</head>
+
+<body>
+  <nav class="px-3 navbar navbar-expand navbar-dark bg-dark sticky-top justify-content-between">
+    <!-- Title and tagline -->
+    <div class="d-flex align-items-center">
+      <a class="navbar-brand fancy-text" href="/">
+        Mahavitaran<i class="ml-2 fa-brands fa-slack"></i>
+      </a>
+      <!-- apply bootstrap class to display this after small breakpoint -->
+      <p class="d-none d-md-block text-nowrap my-auto" style="color: gainsboro">
+        Effortless Electricity Billing
+      </p>
+    </div>
+
+    <!-- Links -->
+    <ul class="navbar-nav ml-auto">
+      <li class="nav-item">
+        <a class="nav-link" href="../protected/manage.html">
+          Manage
+          <span class="sr-only">(current)</span>
+        </a>
+      </li>
+      <!-- Different view if logged in or logged out -->
+      <li class="nav-item">
+        <a class="nav-link" href="../register.html">
+          Register
+          <span class="sr-only">(current)</span>
+        </a>
+      </li>
+      <li class="">
+        <a class="nav-link" href="../protected/notifications.html">
+          <i class="bi bi-bell"></i>
+          <span class="sr-only">(current)</span>
+        </a>
+      </li>
+    </ul>
+  </nav>
+
+  <div class="container col-lg-6">
+    <h2 class="my-3 text-center">Generate Bills</h2>
+    <!-- TODO: Implement user.html page -->
+    <div id="list-connections">
+      <!-- list connections -->
+    </div>
+  </div>
+  <script type="module">
+    import { getAllConnections } from "/src/connections";
+    // get connections from the connections array from local storage and put them in the list-connections div
+    const connections = getAllConnections();
+    const listConnections = document.getElementById("list-connections");
+    if (connections) {
+      connections.forEach((connection) => {
+        const name = connection.owner.name;
+        const caNumber = connection.id;
+        let address = connection.owner.address;
+        address = `${address.street}, ${address.district}, ${address.pincode}`;
+        const card = document.createElement("div");
+        card.classList.add("card", "d-flex", "my-3", "mx-auto", "col-lg-7");
+        card.innerHTML = `
+          <div class="card-body">
+            <input type="hidden" name="caNumber" value="${caNumber}">
+            <ul class="list-group list-group-flush">
+              <li class="list-group-item"><b>Full Name: </b>${name}</li>
+              <li class="list-group-item"><b>CA Number: </b>${caNumber}</li>
+              <li class="list-group-item">
+                <small><b>Address: </b>"${address}"</small>
+              </li>
+            </ul>
+            <div class="d-flex justify-content-between">
+              <button class="dark-btn">
+                <span><i class="fa-solid fa-circle"></i></span>Generate Bill
+              </button>
+            </div>
+          </div>
+        `;
+        listConnections.appendChild(card);
+      });
+    }
+
+    listConnections.addEventListener("click", (e) => {
+      if (e.target.tagName === "BUTTON") {
+        const caNumber = e.target.parentElement.parentElement.querySelector("input").value;
+        const connection = connections.find((connection) => connection.id === caNumber);
+        const bill = {
+          id: Math.floor(Math.random() * 100000000000),
+          connection,
+          amount: Math.floor(Math.random() * 1000),
+          dateGenerated: new Date(),
+          datePaid: null,
+          status: "unpaid",
+        };
+        // get the owner and push the bill
+        const users = JSON.parse(localStorage.getItem("users"));
+        const user = users.find((user) => user.id === connection.owner.id);
+        user.bills.push(bill);
+        localStorage.setItem("users", JSON.stringify(users));
+        console.log(user.bills);
+      }
+    });
+  </script>
+</body>
+
+</html>

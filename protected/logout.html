@@ -1,0 +1,19 @@
+<script type="module">
+  import { Validation } from "../src/helpers/validators";
+
+  // check the loggedIn field on the appState from local storage and if the user is logged set the loggedIn field to false and user field to null and redirect to index page
+  if (
+    localStorage.getItem("appState") &&
+    JSON.parse(localStorage.getItem("appState")).loggedIn
+  ) {
+    let appState = JSON.parse(localStorage.getItem("appState"));
+    appState.loggedIn = false;
+    appState.user = null;
+    localStorage.setItem("appState", JSON.stringify(appState));
+    window.location.href = "/";
+  }
+
+  if (!Validation.userInfoComplete()) {
+    window.location.href = "personal-info.html";
+  }
+</script>

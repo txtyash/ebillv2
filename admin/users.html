@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Users</title>
+    <!-- Import js and css for bootstrap 5 -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- add cdn link for rufina google font -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Rufina:wght@700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css"
+      rel="stylesheet"
+    />
+    <link href="../styles.css" rel="stylesheet" />
+    <script>
+      // check the role field on the appState from local storage and if the user is not admin then redirect to login page
+      if (
+        !localStorage.getItem("appState") ||
+        JSON.parse(localStorage.getItem("appState")).role !== "admin"
+      ) {
+        window.location.href = "/login.html";
+      }
+    </script>
+    <style>
+      .card {
+        color: #333;
+      }
+      .card li {
+        background-color: #f7f7f7;
+      }
+    </style>
+  </head>
+  <body>
+    <nav
+      class="px-3 navbar navbar-expand navbar-dark bg-dark sticky-top justify-content-between"
+    >
+      <!-- Title and tagline -->
+      <div class="d-flex align-items-center">
+        <a class="navbar-brand fancy-text" href="/">
+          Mahavitaran<i class="ml-2 fa-brands fa-slack"></i>
+        </a>
+        <!-- apply bootstrap class to display this after small breakpoint -->
+        <p
+          class="d-none d-md-block text-nowrap my-auto"
+          style="color: gainsboro"
+        >
+          Effortless Electricity Billing
+        </p>
+      </div>
+
+      <!-- Links -->
+      <ul class="navbar-nav ml-auto">
+        <li class="nav-item">
+          <a class="nav-link" href="../protected/manage.html">
+            Manage
+            <span class="sr-only">(current)</span>
+          </a>
+        </li>
+        <!-- Different view if logged in or logged out -->
+        <li class="nav-item">
+          <a class="nav-link" href="../register.html">
+            Register
+            <span class="sr-only">(current)</span>
+          </a>
+        </li>
+        <li class="">
+          <a class="nav-link" href="../protected/notifications.html">
+            <i class="bi bi-bell"></i>
+            <span class="sr-only">(current)</span>
+          </a>
+        </li>
+      </ul>
+    </nav>
+
+    <div class="container col-lg-6">
+      <h2 class="my-3 text-center">Mahavitaran Users</h2>
+      <!-- TODO: Implement user.html page -->
+      <a href="#" class="text-decoration-none">
+        <div class="card d-flex my-3 mx-auto col-lg-7">
+          <div class="card-body">
+            <ul class="list-group list-group-flush">
+              <li class="list-group-item"><b>Full Name: </b>Yash Shinde</li>
+              <li class="list-group-item"><b>Connections: </b>68</li>
+              <li class="list-group-item">
+                <small><b>Address: </b>401, Ananta Meadows, Mundhwa...</small>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </a>
+    </div>
+  </body>
+</html>

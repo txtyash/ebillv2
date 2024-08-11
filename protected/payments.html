@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Document</title>
+  <!-- Import js and css for bootstrap 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- add cdn link for rufina google font -->
+  <link href="https://fonts.googleapis.com/css2?family=Rufina:wght@700&display=swap" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet" />
+  <link href="../styles.css" rel="stylesheet" />
+  <script type="module">
+    import { Validation } from "../src/helpers/validators";
+    // check the loggedIn field on the appState from local storage and if the user is not logged in then redirect to login page
+    if (
+      !localStorage.getItem("appState") ||
+      !JSON.parse(localStorage.getItem("appState")).loggedIn
+    ) {
+      window.location.href = "/login.html";
+    }
+
+    if (!Validation.userInfoComplete()) {
+      window.location.href = "personal-info.html";
+    }
+  </script>
+</head>
+
+<body>
+  <nav class="px-3 navbar navbar-expand navbar-dark bg-dark sticky-top justify-content-between">
+    <!-- Title and tagline -->
+    <div class="d-flex align-items-center">
+      <a class="navbar-brand fancy-text" href="/">
+        Mahavitaran<i class="ml-2 fa-brands fa-slack"></i>
+      </a>
+      <!-- apply bootstrap class to display this after small breakpoint -->
+      <p class="d-none d-md-block text-nowrap my-auto" style="color: gainsboro">
+        Effortless Electricity Billing
+      </p>
+    </div>
+
+    <!-- Links -->
+    <ul class="navbar-nav ml-auto">
+      <li class="nav-item">
+        <a class="nav-link" href="manage.html">
+          Manage
+          <span class="sr-only">(current)</span>
+        </a>
+      </li>
+      <!-- Different view if logged in or logged out -->
+      <li class="nav-item">
+        <a class="nav-link" href="../register.html">
+          Register
+          <span class="sr-only">(current)</span>
+        </a>
+      </li>
+      <li class="">
+        <a class="nav-link" href="notifications.html">
+          <i class="bi bi-bell"></i>
+          <span class="sr-only">(current)</span>
+        </a>
+      </li>
+    </ul>
+  </nav>
+
+  <h2 class="my-3 text-center">Payment Information</h2>
+  <div class="container mt-5">
+  </div>
+  <script type="module">
+    import { getBillById, payBillForId } from "/src/bills";
+    // get query params of this page's link: ex: http://localhost:5173/protected/payments.html?billId=66430074078&amount=571
+    const urlParams = new URLSearchParams(window.location.search);
+    const billId = urlParams.get("billId");
+    const bill = getBillById(billId);
+    // if bill paid then redirect to /protected/bills.html
+    if (bill.status == "paid") {
+      window.location.href = "/protected/bills.html";
+    }
+    const amount = bill.amount;
+    const form = `
+        <form class="mx-auto col-lg-6">
+      <div class="mb-3">
+        <span class="text-info"><strong>Amount to be paid:</strong></span>
+        <span class="h5">${amount}</span>
+        <i class="fa-solid fa-indian-rupee-sign"></i>
+      </div>
+      <div class="mb-3">
+        <label for="cardName" class="form-label">Name on Card</label>
+        <input type="text" class="form-control" id="cardName" placeholder="Full Name" required />
+      </div>
+      <div class="mb-3">
+        <label for="cardNumber" class="form-label">Card Number</label>
+        <input type="text" class="form-control" id="cardNumber" placeholder="1234 5678 9012 3456" 
+          title="Please enter a valid 13-16 digit card number" required maxlength="16" />
+      </div>
+      <div class="row">
+        <div class="mb-3 col-md-6">
+          <label for="expiryDate" class="form-label">Expiration Date (MM/YYYY)</label>
+          <input type="text" class="form-control" id="expiryDate" placeholder="MM/YYYY"
+            pattern="(0[1-9]|1[0-2])\/[0-9]{4}" title="Please enter a valid expiration date in MM/YYYY format"
+            required />
+        </div>
+        <div class="mb-3 col-md-6">
+          <label for="cvv" class="form-label">CVV</label>
+          <input type="text" class="form-control" id="cvv" placeholder="123"
+            title="Please enter a valid 3 or 4-digit CVV" required />
+        </div>
+      </div>
+      <button type="submit" class="dark-btn">
+        <span><i class="fa-solid fa-circle"></i></span>Proceed
+      </button>
+    </form>
+    `;
+    document.querySelector(".container").innerHTML = form;
+    // add event listener to the form button. on clicking pay, the bill will be marked as paid and the user will be redirected to /protected/bills.html, use the payBillForId function
+    document.querySelector("form").addEventListener("submit", (e) => {
+      e.preventDefault();
+      payBillForId(billId);
+      // window.location.href = "/protected/bills.html";
+      // redirect after 2 seconds
+      setTimeout(() => {
+        window.location.href = "/protected/bills.html";
+      }, 2300);
+    });
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,1 @@
+// Helper functions to generate CA number, bill amount, and ID for various entities
